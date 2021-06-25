@@ -1,13 +1,13 @@
 import torch #works on tensors (not on numpy arrays)
 import numpy as np  
 import cv2 #for image processing tasks like reading an image from directory etc.
-
+import boto3
 import torch.nn as nn #nn implies neural networks
 import torch.nn.functional as F
 from torch.autograd import Variable
 import math
 from functools import partial
-
+from io import BytesIO
 
 def conv3x3x3(in_planes, out_planes, stride=1):  #convolutional layer 3d for our model
     # 3x3x3 convolution with padding ##3d coonv layer is used as we are working with videos 
@@ -216,11 +216,13 @@ no_to_gest = ['Doing_other_things','Drumming_Fingers','No_gesture','Pulling_Hand
     'Turning_Hand_Counterclockwise','Zooming_In_With_Full_Hand','Zooming_In_With_Two_Fingers','Zooming_Out_With_Full_Hand',
     'Zooming_Out_With_Two_Fingers']
 
-model =[]
 
 model = resnext101(sample_size=100,sample_duration=12,num_classes=27)#25 gestures and 2 non gestures
-dicto = torch.load("model.pth",map_location=torch.device('cpu'))
-model.load_state_dict(dicto)
+s3 = boto3.client('s3')
+res = s3.get_object(Bucket = 'myfinalyearproject',Key=f'model.pth')
+state = torch.load(BytesIO(res["Body"].read()),map_location=torch.device('cpu'))
+#dicto = torch.load("model.pth")
+model.load_state_dict(state)
 imgs = np.array(np.transpose(cv2.imread("100027//00001.jpg"),(2,0,1))).reshape(3,1,100,176)
 for i in range(2,38,3):
     if(i<=9):
