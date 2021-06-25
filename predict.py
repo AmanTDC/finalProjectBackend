@@ -1,3 +1,7 @@
+try:
+  import unzip_requirements
+except ImportError:
+  pass
 import torch #works on tensors (not on numpy arrays)
 import numpy as np  
 import cv2 #for image processing tasks like reading an image from directory etc.

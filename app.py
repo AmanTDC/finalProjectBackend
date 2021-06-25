@@ -1,5 +1,8 @@
 # app.py
-
+try:
+  import unzip_requirements
+except ImportError:
+  pass
 from flask import Flask,request
 import predict
 import cv2
